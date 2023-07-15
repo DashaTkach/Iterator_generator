@@ -6,16 +6,13 @@ class FlatIterator:
     def __iter__(self):
         self.outer_list_cursor = 0  # индексы основного списка
         self.inner_list_cursor = -1  # индексы списков списков
-        self.new_list = []
         return self
 
     def __next__(self):
         self.inner_list_cursor += 1
-
         if self.inner_list_cursor == len(self.list_of_lists[self.outer_list_cursor]):
             self.outer_list_cursor += 1
             self.inner_list_cursor = 0
-
         if self.outer_list_cursor == len(self.list_of_lists):
             raise StopIteration
         return self.list_of_lists[self.outer_list_cursor][self.inner_list_cursor]
