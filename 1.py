@@ -1,20 +1,24 @@
 class FlatIterator:
 
-    def __init__(self, list_of_list):
-        self.list_of_list = list_of_list
+    def __init__(self, list_of_lists):
+        self.list_of_lists = list_of_lists
 
     def __iter__(self):
-        self.index = 0
+        self.outer_list_cursor = 0  # индексы основного списка
+        self.inner_list_cursor = -1  # индексы списков списков
         self.new_list = []
         return self
 
     def __next__(self):
-        if self.index >= len(self.list_of_list):
+        self.inner_list_cursor += 1
+
+        if self.inner_list_cursor == len(self.list_of_lists[self.outer_list_cursor]):
+            self.outer_list_cursor += 1
+            self.inner_list_cursor = 0
+
+        if self.outer_list_cursor == len(self.list_of_lists):
             raise StopIteration
-        for i in self.list_of_list[self.index]:
-            self.new_list.append(i)
-        self.index += 1
-        return self.new_list
+        return self.list_of_lists[self.outer_list_cursor][self.inner_list_cursor]
 
 
 def test_1():
@@ -24,16 +28,13 @@ def test_1():
         [1, 2, None]
     ]
 
-    for item in FlatIterator(list_of_lists_1):
-        item = item
-
     for flat_iterator_item, check_item in zip(
-            item,
+            FlatIterator(list_of_lists_1),
             ['a', 'b', 'c', 'd', 'e', 'f', 'h', False, 1, 2, None]
     ):
         assert flat_iterator_item == check_item
 
-    assert list(item) == ['a', 'b', 'c', 'd', 'e', 'f', 'h', False, 1, 2, None]
+    assert list(FlatIterator(list_of_lists_1)) == ['a', 'b', 'c', 'd', 'e', 'f', 'h', False, 1, 2, None]
 
 
 if __name__ == '__main__':
